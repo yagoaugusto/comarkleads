@@ -57,6 +57,48 @@ function get_status_badge($status)
 }
 ?>
 
+<?php if (isset($_GET['sucesso'])): ?>
+    <?php if ($_GET['sucesso'] == 'indicadores_carregados'): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            <strong>Indicadores carregados com sucesso!</strong> 
+            <?php if (isset($_GET['registros'])): ?>
+                <?php echo intval($_GET['registros']); ?> registros foram importados.
+            <?php endif; ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>
+
+<?php if (isset($_GET['erro'])): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <strong>Erro:</strong> 
+        <?php 
+        switch($_GET['erro']) {
+            case 'arquivo_invalido':
+                echo 'Arquivo não foi enviado corretamente.';
+                break;
+            case 'formato_invalido':
+                echo 'Formato de arquivo inválido. Use apenas .xlsx ou .xls';
+                break;
+            case 'arquivo_muito_grande':
+                echo 'Arquivo muito grande. Tamanho máximo: 10MB';
+                break;
+            case 'processamento':
+                echo 'Erro ao processar o arquivo Excel. Verifique o formato dos dados.';
+                break;
+            case 'acesso_negado':
+                echo 'Acesso negado.';
+                break;
+            default:
+                echo 'Erro desconhecido.';
+        }
+        ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
+
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -152,8 +194,12 @@ function get_status_badge($status)
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Leads da Campanha</h5>
-            <div class="btn-group"> <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNovoLead">
+            <div class="btn-group"> 
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNovoLead">
                     <i class="bi bi-plus-circle"></i> Adicionar Lead
+                </button>
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalCarregarIndicadores">
+                    <i class="bi bi-graph-up"></i> CARREGAR INDICADORES
                 </button>
                 <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="visually-hidden">Ações em Massa</span>
@@ -167,6 +213,12 @@ function get_status_badge($status)
                     <li>
                         <a class="dropdown-item" href="../app/exportar_excel.php?campanha_id=<?php echo $campanha_id; ?>">
                             <i class="bi bi-file-earmark-excel me-2"></i>Exportar para Excel
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" href="analytics_dashboard.php?campanha_id=<?php echo $campanha_id; ?>">
+                            <i class="bi bi-bar-chart me-2"></i>Ver Analytics / BI
                         </a>
                     </li>
                 </ul>
@@ -305,6 +357,53 @@ function get_status_badge($status)
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Iniciar Disparo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for uploading campaign indicators -->
+<div class="modal fade" id="modalCarregarIndicadores" tabindex="-1" aria-labelledby="modalCarregarIndicadoresLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCarregarIndicadoresLabel">
+                    <i class="bi bi-graph-up me-2"></i>Carregar Indicadores da Campanha
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="../app/upload_indicadores.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="campanha_id" value="<?php echo $campanha_id; ?>">
+                
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Instruções:</strong> Faça upload do arquivo Excel com os dados dos indicadores da campanha. 
+                        O arquivo deve seguir o mesmo formato do arquivo de exemplo <code>campanha.xlsx</code>.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="arquivo_excel" class="form-label">Arquivo Excel</label>
+                        <input type="file" class="form-control" id="arquivo_excel" name="arquivo_excel" 
+                               accept=".xlsx,.xls" required>
+                        <div class="form-text">
+                            Formatos aceitos: Excel (.xlsx, .xls). Tamanho máximo: 10MB.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descricao_upload" class="form-label">Descrição (opcional)</label>
+                        <textarea class="form-control" id="descricao_upload" name="descricao_upload" 
+                                  rows="2" placeholder="Adicione uma descrição para este conjunto de dados..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-upload me-2"></i>Carregar Indicadores
+                    </button>
                 </div>
             </form>
         </div>
