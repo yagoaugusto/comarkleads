@@ -1,0 +1,40 @@
+# Dependencies
+vendor/
+node_modules/
+
+# Configuration files (should be environment specific)
+config/database_local.php
+
+# Cache and temporary files
+cache/
+temp/
+tmp/
+*.tmp
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Uploaded files
+uploads/
+files/
+*.xlsx
+*.xls
+!campanha.xlsx
+
+# Environment files
+.env
+.env.local
+.env.production
