@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $seguidores_instagram = is_numeric($linha[20]) ? intval($linha[20]) : null;
 
             $stmt_insert->bind_param(
-                "issssssssissdiiddiiidi",
+                "isssssssdisdiiddidiidii",
                 $campanha_id, $inicio_relatorios, $termino_relatorios, $nome_campanha_origem,
                 $data_criacao_campanha, $veiculacao_campanha, $orcamento_conjunto_anuncios,
                 $tipo_orcamento_conjunto_anuncios, $valor_usado_brl, $resultados, $indicador_resultados,
